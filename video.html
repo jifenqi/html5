@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+    <style>
+        * {
+        margin: 0;
+        padding: 0;
+    }
+
+    .player {
+        /*width: 600px;
+        height: 400px;*/
+        margin: 0 auto;
+        overflow: hidden;
+        position: relative;
+    }
+
+    #status {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 70px;
+        height: 70px;
+        border-radius: 50%;
+        box-shadow: 0px 0px 20px #fff;
+    }
+
+    .status-0 {
+        background: url(http://img2.imgtn.bdimg.com/it/u=2083654453,202534333&fm=26&gp=0.jpg);
+        background-size: cover;
+    }
+
+    .status-1 {
+        background: url(http://bpic.588ku.com/element_origin_min_pic/01/50/92/2857456bb790588.jpg);
+        background-size: cover;
+    }
+
+    .operators {
+        position: absolute;
+        bottom: -100%;
+        left: 0;
+        width: 100%;
+        height: 10%;
+        background: #1d1d1d;
+        border-top: 2px solid #666;
+        display: -webkit-flex;
+        display: -moz-flex;
+        display: -ms-flex;
+        display: -o-flex;
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        transition: all 0.3s;
+    }
+    .operators #min_status {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+    }
+
+    .operators .progressBar {
+        width: 80%;
+        height: 70%;
+        display: -webkit-flex;
+        display: -moz-flex;
+        display: -ms-flex;
+        display: -o-flex;
+        display: flex;
+        align-items: center;
+        justify-content: space-around;
+    }
+
+    .progressBar>span {
+        width: 8%;
+        height: 100%;
+        display: -webkit-flex;
+        display: -moz-flex;
+        display: -ms-flex;
+        display: -o-flex;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 12px;
+        color: white;
+    }
+
+    .progressBar .progress {
+        flex: 1;
+        height: 100%;
+        position: relative;
+    }
+
+    .progress i {
+        position: absolute;
+        top: 50%;
+        left: 0;
+        transform: translateY(-50%);
+        width: 100%;
+        height: 16%;
+        box-shadow: 0px 0px 5px #2b1515;
+        background: white;
+        border-radius: 5px;
+    }
+
+    .progress i span {
+        position: absolute;
+        top: 50%;
+        left: 0;
+        transform: translate(-50%, -50%);
+        width: 6px;
+        height: 6px;
+        border: 3px solid #ab0101;
+        border-radius: 50%;
+        background: white;
+        cursor: pointer;
+    }
+
+    .progress i b {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 0;
+        height: 100%;
+        background: #ffb715;
+        border-radius: 5px;
+    }
+
+    .operators .volume {
+        width: 30px;
+        height: 30px;
+        background: url(https://ss1.bdstatic.com/70cFuXSh_Q1YnxGkpoWK1HF6hhy/it/u=2262740428,1874875489&fm=26&gp=0.jpg);
+        background-size: cover;
+        border-radius: 50%;
+        position: relative;
+    }
+
+    .volume i {
+        position: absolute;
+        top: -30%;
+        left: 50%;
+        transform: translate(-50%, -100%) rotate(180deg);
+        width: 5px;
+        height: 100px;
+        border-radius: 3px;
+        background: white;
+        opacity: 0;
+        z-index: -1;
+    }
+
+    .volume i span {
+        position: absolute;
+        top: 0;
+        left: 50%;
+        width: 5px;
+        height: 5px;
+        border: 3px solid #f0f;
+        border-radius: 50%;
+        background: white;
+        transform: translate(-50%, -50%);
+        cursor: pointer;
+    }
+
+    .volume i b {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 5px;
+        height: 0px;
+        background: #f0f;
+    }
+
+    .view {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        background: url(https://ss3.bdstatic.com/70cFv8Sh_Q1YnxGkpoWK1HF6hhy/it/u=1176165191,3242705672&fm=26&gp=0.jpg);
+        background-size: cover;
+    }
+    </style>
+</head>
+
+<body>
+    <div class="player" style="width:600px;height:400px;">
+        <canvas id="play"></canvas>
+        <div id="status" class="status-1"></div>
+        <div class="operators">
+            <div id="min_status" class="status-1"></div>
+            <div class="progressBar">
+                <span class="start-time">0.00</span>
+                <div class="progress">
+                    <i>
+                        <b></b>
+                        <span></span>
+                    </i>
+                </div>
+                <span class="end-time">12.00</span>
+            </div>
+            <div class="volume">
+                <i>
+                    <b></b>
+                    <span></span>
+                </i>
+            </div>
+            <div class="view"></div>
+        </div>
+    </div>
+    <video src="http://vfx.mtime.cn/Video/2019/03/09/mp4/190309153658147087.mp4" id="video" style="display:none"></video>
+    <div class="btn" style="position:fixed;top: 0;left: 0;">
+        <button type="button" class="big">放大</button>
+        <button type="button" class="less">缩小</button>
+        <button type="button" onclick="setPlaySpeed(1)">一倍速</button>
+        <button type="button" onclick="setPlaySpeed(1.5)">1.5倍速</button>
+        <button type="button" onclick="setPlaySpeed(2)">二倍速</button>
+    </div>
+</body>
+<script>
+//http://vfx.mtime.cn/Video/2019/03/09/mp4/190309153658147087.mp4
+var player = document.querySelector(".player")
+var canvas = document.querySelector("#play")
+var video = document.querySelector("#video")
+var s = document.getElementById("status") //此处起名status 关键字  表示元素的状态
+var s0 = document.getElementById("min_status")
+var oP = document.querySelector('.operators')
+var ctx = canvas.getContext("2d");
+var gW = 600,
+    gH = 400; //初始宽高
+//自动监听元素尺寸变化
+//https://segmentfault.com/a/1190000019599439 
+var observer = new MutationObserver(function(mutations, observer) {
+    mutations.forEach(function(mutation) {
+        canvas.width = mutation.target.offsetWidth;
+        canvas.height = mutation.target.offsetHeight;
+    });
+});
+var config = {
+    attributes: true,
+    attributeOldValue: true,
+    attributeFilter: [
+        'style'
+    ]
+};
+
+observer.observe(player, config);
+
+canvas.width = player.offsetWidth;
+canvas.height = player.offsetHeight;
+
+var flag = !video.paused;
+ctx.fillRect(0, 0, canvas.width, canvas.height)
+//点击父级暂停  播放
+player.onclick = function(e) {
+    if (e.target.id == 'min_status' || e.target.id == 'play' || e.target.id == 'status') {
+        tab()
+    }
+}
+var timer = null;
+player.onmousemove = function(e) {
+    oP.style.bottom = '0px'
+    var x = e.pageY-player.offsetTop;
+    if(x<oP.offsetTop){
+		clearInterval(timer)
+	    timer = setInterval(function() {
+	        oP.style.bottom = '-100%'
+	    }, 3000)
+	}else{
+		clearInterval(timer)			//***此处必须设置清除  以清除上一个计时器
+		oP.style.bottom = '0px'
+	}
+}
+player.onmouseleave = function() {
+    oP.style.bottom = '-100%'
+}
+//播放暂停
+function tab() {
+    // flag = true;
+    if (!flag) { //开始播放
+        s.className = 'status-0'
+        s0.className = 'status-0'
+        s.style.display = 'none'
+        video.play()
+        switchToCanvas()
+        flag = true
+    } else { //站停播放
+        s.className = 'status-1'
+        s0.className = 'status-1'
+        s.style.display = 'block'
+        video.pause()
+        flag = false
+    }
+}
+
+//实现进度条拖拽
+
+var pR = document.querySelector(".progress")
+var pI = document.querySelector(".progress i")
+var pS = document.querySelector(".progress i span")
+var pB = document.querySelector(".progress i b")
+pS.onmousedown = function(e) {
+    // console.log("按下")
+    document.onmousemove = function(e) {
+        e.preventDefault();
+        // console.log("拖动")
+        var x = e.pageX - pR.offsetLeft - player.offsetLeft;
+        //范围限制
+        x = x <= 0 ? 0 : x >= pI.offsetWidth ? x = pI.offsetWidth : x;
+        pB.style.width = pS.style.left = x + 'px'
+        video.currentTime = (x / pI.offsetWidth) * video.duration;
+    }
+}
+document.onmouseup = function(e) {
+    e.preventDefault()
+    //绑定事件进行释放
+    document.onmousemove = null;
+
+}
+//点击进度条播放到指定位置
+pI.onclick = function(e) {
+    var x0 = e.pageX - pR.offsetLeft - player.offsetLeft;
+    pB.style.width = pS.style.left = x0 + 'px'
+    if (video.paused) {
+        video.play()
+        tab()
+    }
+    video.currentTime = (x0 / pI.offsetWidth) * video.duration;
+}
+//实时进行渲染
+function switchToCanvas() {
+    document.querySelector(".start-time").innerHTML = turnM(video.currentTime)
+    document.querySelector(".end-time").innerHTML = turnM(video.duration)
+    //进度条自动跟随操作
+    var rate = video.currentTime / video.duration
+    pB.style.width = pS.style.left = rate * pI.offsetWidth + 'px'
+    if (video.ended) {
+        s.className = 'status-1'
+        s0.className = 'status-1'
+        s.style.display = 'block'
+        video.pause()
+        flag = false
+        return;
+    }
+    ctx.clearRect(0, 0, canvas.width, canvas.height)
+    // 将video上的图片的每一帧以图片的形式绘制的canvas上
+    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+    window.requestAnimationFrame(switchToCanvas);
+}
+//将秒数转换为分钟格式 仅仅是分钟化秒
+function turnM(s) {
+    var m = parseInt(s / 60)
+    var s0 = parseInt(s % 60)
+    var s1 = (s0) < 10 ? "0" + (s0) : (s0);
+    return m + ':' + s1
+}
+
+//音量控制 
+var volu = document.querySelector(".volume");
+var vI = volu.querySelector("i")
+var vS = volu.querySelector("span")
+var vB = volu.querySelector("b")
+var flagV = false;
+vB.style.height = vS.style.top = (video.volume) * vI.offsetHeight + 'px'
+volu.onclick = function() {
+    taV()
+}
+
+function taV() {
+    if (!flagV) {
+        vI.style = 'opacity:1;z-index:1'
+        flagV = true;
+    } else {
+        vI.style = 'opacity:0;z-index:-1'
+        flagV = false;
+    }
+}
+//滑动音量控制
+vS.onmousedown = function(e) {
+    var x0 = e.pageY + vS.offsetTop;
+    document.onmousemove = function(e) {
+        e.preventDefault()
+        var x = x0 - e.pageY;
+        x = x <= 0 ? 0 : x >= vI.offsetHeight ? vI.offsetHeight : x;
+        vB.style.height = vS.style.top = x + 'px'
+        video.volume = x / vI.offsetHeight;
+    }
+}
+document.onmouseup = function() {
+    document.onmousemove = null;
+}
+//点击控制音量
+vI.onclick = function(e) {
+    var x = oP.offsetTop + volu.offsetTop - e.pageY - vI.offsetTop;
+    console.log(volu.offsetTop)
+    vB.style.height = vS.style.top = x + 'px'
+}
+
+//点击全屏 退出全屏
+var view = document.querySelector(".view");
+var flagR = false;
+view.onclick = function() {
+    taR()
+}
+
+function taR() {
+    if (!flagR) {
+        var requestMethod = player.requestFullScreen || //W3C
+            player.webkitRequestFullScreen || //Chrome等
+            player.mozRequestFullScreen || //FireFox
+            player.msRequestFullScreen; //IE11
+        if (requestMethod) {
+            requestMethod.call(player);
+        } else if (typeof window.ActiveXObject !== "undefined") { //for Internet Explorer
+            var wscript = new ActiveXObject("WScript.Shell");
+            if (wscript !== null) {
+                wscript.SendKeys("{F11}");
+            }
+        }
+    } else {
+        var exitMethod = document.exitFullscreen || //W3C
+            document.mozCancelFullScreen || //Chrome等
+            document.webkitExitFullscreen || //FireFox
+            document.webkitExitFullscreen; //IE11
+        if (exitMethod) {
+            exitMethod.call(document);
+        } else if (typeof window.ActiveXObject !== "undefined") { //for Internet Explorer
+            var wscript = new ActiveXObject("WScript.Shell");
+            if (wscript !== null) {
+                wscript.SendKeys("{F11}");
+            }
+        }
+    }
+}
+//https://www.itsvse.com/thread-3800-1-1.html
+// document.addEventListener("fullscreenchange", function(e) {
+//   console.log("fullscreenchange", e);
+// });
+// document.addEventListener("mozfullscreenchange", function(e) {
+//   console.log("mozfullscreenchange ", e);
+// });
+document.addEventListener("webkitfullscreenchange", function(e) {
+    if (!flagR) {
+        canvas.width = innerWidth;
+        canvas.height = innerHeight;
+        flagR = true
+    } else {
+        canvas.width = gW;
+        canvas.height = gH;
+        flagR = false
+    }
+});
+// document.addEventListener("msfullscreenchange", function(e) {
+//   console.log("msfullscreenchange", e);
+// });
+//放大缩小操作
+//
+var big = document.querySelector(".big")
+var less = document.querySelector(".less")
+var index = 30;
+big.onclick = function() {
+    if (player.offsetHeight >= innerHeight) {
+        return
+    }
+    gW = index + player.offsetWidth
+    gH = index + player.offsetHeight
+    player.style.width = gW + 'px';
+    player.style.height = gH + 'px';
+
+}
+less.onclick = function() {
+    if (player.offsetHeight <= 300) {
+        return
+    }
+    gW = player.offsetWidth - index
+    gH = player.offsetHeight - index
+    player.style.width = gW + 'px';
+    player.style.height = gH + 'px';
+
+}
+
+//设置倍速
+    function setPlaySpeed(s){
+        video.playbackRate=s;
+    }
+</script>
+
+</html>
